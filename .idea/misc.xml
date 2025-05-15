@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/URLShortener(Backend)/pom.xml" />
+        <option value="$PROJECT_DIR$/URLShortener_Backend/pom.xml" />
       </list>
     </option>
   </component>
