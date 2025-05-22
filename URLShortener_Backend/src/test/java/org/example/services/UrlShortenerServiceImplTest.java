@@ -37,6 +37,7 @@ public class UrlShortenerServiceImplTest {
         UrlShortenerResponse urlShortenerResponse = urlShortenerService.generateShortUrl(urlShortenerRequest);
         assertEquals(urlShortenerRequest.getOriginalUrl(), urlShortenerResponse.getOriginalUrl());
         assertNotNull(urlShortenerResponse);
+        System.out.println(urlShortenerResponse.getShortUrl());
     }
 
     @Test

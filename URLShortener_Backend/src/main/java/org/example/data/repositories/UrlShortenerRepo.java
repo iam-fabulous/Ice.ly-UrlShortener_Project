@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UrlShortenerRepo extends MongoRepository<UrlShortener, String> {
-    UrlShortener findOriginalUrlByShortUrl(String shortUrl);
+    UrlShortener findByShortUrl(String shortUrl);
 }

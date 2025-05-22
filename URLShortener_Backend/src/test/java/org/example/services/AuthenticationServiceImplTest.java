@@ -4,6 +4,7 @@ import org.example.data.repositories.UserRepo;
 import org.example.dtos.request.CreateAccountRequest;
 import org.example.dtos.request.LoginRequest;
 import org.example.dtos.response.CreateAccountResponse;
+import org.example.dtos.response.LoginResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,8 @@ public class AuthenticationServiceImplTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("Fabulous");
         loginRequest.setPassword("123456");
-        boolean loginResponse = authenticationService.login(loginRequest);
-        assertTrue(loginResponse);
+        LoginResponse loginResponse = authenticationService.login(loginRequest);
+        assertTrue(loginResponse.getIsLoggedIn());
 
     }
 
@@ -59,8 +60,8 @@ public class AuthenticationServiceImplTest {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("Fabulous");
         loginRequest.setPassword("123456");
-        boolean loginResponse = authenticationService.login(loginRequest);
-        assertTrue(loginResponse);
+        LoginResponse loginResponse = authenticationService.login(loginRequest);
+        assertTrue(loginResponse.getIsLoggedIn());
 
         boolean logOutResponse = authenticationService.logout();
         assertTrue(logOutResponse);

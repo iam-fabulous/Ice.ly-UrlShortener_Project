@@ -7,25 +7,31 @@ import org.example.dtos.request.UrlShortenerRequest;
 import org.example.dtos.response.UrlShortenerResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+
 public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     private final UrlShortenerRepo urlShortenerRepo;
+
+    public UrlShortenerServiceImpl(UrlShortenerRepo urlShortenerRepo) {
+        this.urlShortenerRepo = urlShortenerRepo;
+    }
 
     @Override
     public UrlShortenerResponse generateShortUrl(UrlShortenerRequest urlShortenerRequest) {
         validateUrlRequest(urlShortenerRequest);
 
         UrlShortener newUrlShortener = new UrlShortener();
+        newUrlShortener.setUserId(urlShortenerRequest.getUserId());
         newUrlShortener.setOriginalUrl(urlShortenerRequest.getOriginalUrl());
         newUrlShortener.setShortUrl(withGeneratedUrl(generateRandomLength(), getCharacterRanges()));
-        newUrlShortener.setCreatedAt(urlShortenerRequest.getCreatedAt());
+        newUrlShortener.setCreatedAt(getFormattedCurrentDateTime());
         urlShortenerRepo.save(newUrlShortener);
 
         return mapToUrlShortenerResponse(newUrlShortener);
@@ -36,7 +42,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     public UrlShortenerResponse fetchOriginalUrl(UrlShortenerRequest request) {
         //String originalUrl = String.valueOf(urlShortenerRepo.findOriginalUrlByShortUrl(currentShortUrl()));
 
-        UrlShortener urlShortener = urlShortenerRepo.findOriginalUrlByShortUrl(request.getShortUrl());
+        UrlShortener urlShortener = urlShortenerRepo.findByShortUrl(request.getShortUrl());
         confirmContentOf(urlShortener);
 
         return mapToUrlShortenerResponse(urlShortener);
@@ -46,7 +52,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Override
     public UrlShortenerResponse changeOriginalUrl(UrlShortenerRequest request) {
-        UrlShortener urlShortener = urlShortenerRepo.findOriginalUrlByShortUrl(request.getShortUrl());
+        UrlShortener urlShortener = urlShortenerRepo.findByShortUrl(request.getShortUrl());
         confirmContentOf(urlShortener);
 
         urlShortener.setOriginalUrl(request.getOriginalUrl());
@@ -69,7 +75,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
     @Override
     public boolean deleteOriginalUrl(UrlShortenerRequest request) {
-        UrlShortener urlShortener = urlShortenerRepo.findOriginalUrlByShortUrl(request.getShortUrl());
+        UrlShortener urlShortener = urlShortenerRepo.findByShortUrl(request.getShortUrl());
         confirmContentOf(urlShortener);
 
         urlShortenerRepo.delete(urlShortener);
@@ -149,7 +155,13 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         UrlShortenerResponse response = new UrlShortenerResponse();
         response.setOriginalUrl(urlShortener.getOriginalUrl());
         response.setShortUrl(urlShortener.getShortUrl());
-        response.setCreatedAt(urlShortener.getCreatedAt());
+        response.setCreatedAt(getFormattedCurrentDateTime());
         return response;
+    }
+
+    public static String getFormattedCurrentDateTime() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy, h:mm a");
+        return currentTime.format(formatter);
     }
 }

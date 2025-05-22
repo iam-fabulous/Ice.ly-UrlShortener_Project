@@ -1,14 +1,20 @@
 package org.example.services;
 
+import lombok.AllArgsConstructor;
 import org.example.Exceptions.UserNotFoundException;
+import org.example.data.models.UrlShortener;
 import org.example.data.models.User;
 import org.example.data.repositories.UserRepo;
 import org.example.dtos.request.CreateAccountRequest;
 import org.example.dtos.request.LoginRequest;
 import org.example.dtos.response.CreateAccountResponse;
+import org.example.dtos.response.LoginResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
+
 public class AuthenticationServiceImpl implements AuthenticationService{
     private final UserRepo userRepo;
 
@@ -21,14 +27,17 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         checkIfUserExists(request.getUsername());
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
         user.setLoggedIn(false);
         user.setRegistered(true);
-        user.setCreatedAt(request.getLocalDateTime());
+        user.setCreatedAt(LocalDateTime.now());
         userRepo.save(user);
         CreateAccountResponse response = new CreateAccountResponse();
+        response.setUserId(user.getUserId());
         response.setMessage("Successfully Registered!");
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
 
         return response;
     }
@@ -40,16 +49,19 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     }
 
     @Override
-    public boolean login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         User user = getUser(loginRequest);
         validateUser(loginRequest, user);
         logIn(user);
-        return user.isLoggedIn();
+        LoginResponse response = new LoginResponse();
+        response.setLoggedIn(user.isLoggedIn());
+        response.setUserId(user.getUserId());
+        response.setUsername(user.getUsername());
+        return response;
     }
 
     private User getUser(LoginRequest loginRequest) {
-        User user = userRepo.findByUsername(loginRequest.getUsername());
-        return user;
+        return userRepo.findByUsername(loginRequest.getUsername());
     }
 
     private static void logIn(User user) {
