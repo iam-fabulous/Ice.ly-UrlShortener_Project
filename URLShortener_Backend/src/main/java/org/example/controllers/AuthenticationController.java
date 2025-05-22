@@ -66,7 +66,7 @@ public class AuthenticationController {
     private static ResponseEntity<AccountApiResponse> getAccountApiResponseResponseEntity(LoginRequest loginRequest, boolean loginSuccessful) {
         if (loginSuccessful) {
             return ResponseEntity.ok(
-                    new AccountApiResponse(true, "Login successful", loginRequest.getUsername())
+                    new AccountApiResponse(true, "Login successful!", loginRequest.getUsername())
             );
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
